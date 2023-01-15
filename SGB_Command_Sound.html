@@ -197,14 +197,16 @@ Sound Effect A (port 1) and Sound Effect B (port 2) must be set.</li>
  0     Command*8+Length (fixed length=1)
  1-F   Not used (zero)
 </code></pre>
-<p>The sound code/data is sent by VRAM-Transfer (4 KBytes).
-All 16-bit values are little-endian.</p>
-<pre><code> 000-001  Size of transfer data
- 002-003  Destination address in S-APU RAM (typically $2B00, see below)
- 004-XXX  Data to be transferred
- X+1-X+2  &quot;End marker&quot; (???), should be $0000
- X+3-X+4  S-APU jump address, should be $0400
- X+5-FFF  Remaining bytes ignored
+<p>The sound code/data is sent by <a href="SGB_VRAM_Transfer.html#vram-transfers">VRAM transfer</a> as a contiguous list of “packets”.</p>
+<p>All 16-bit values are little-endian.</p>
+<p>Data transfer packet format:</p>
+<pre><code> 0-1    Size of data below (N); if zero, this is instead a jump packet
+ 2-3    Destination address in S-APU RAM (typically $2B00, see below)
+ 4-N+3  Data to be transferred
+</code></pre>
+<p>Jump packet format:</p>
+<pre><code> 0-1  Must be $0000
+ 2-3  S-APU jump address, use $0400 to safely restart the built-in SGB BIOS' N-SPC sound engine
 </code></pre>
 <p>Possible destinations in APU-RAM are:</p>
 <div class="table-wrapper"><table><thead><tr><th>Memory range</th><th>Description</th></tr></thead><tbody>

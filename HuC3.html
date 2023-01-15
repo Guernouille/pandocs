@@ -212,7 +212,7 @@ ignored.</p>
 <p>The RTC MCU communication protocol is described below.</p>
 <h3 id="b--rtc-commandargument-write"><a class="header" href="#b--rtc-commandargument-write">$B — RTC Command/Argument [write]</a></h3>
 <p>The value written consists of a command in bits 6-4, and an argument
-value in bits 4–0. For example the value $62 is command $6 with argument
+value in bits 3–0. For example the value $62 is command $6 with argument
 value $2. Writing to this register just sets the values in the mailbox
 registers – it does not cause the command to be executed.</p>
 <h3 id="c--rtc-commandresponse-read"><a class="header" href="#c--rtc-commandresponse-read">$C — RTC Command/Response [read]</a></h3>
