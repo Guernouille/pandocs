@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/39dc6673ca183c52acee4a631da50e956a3f5cd2"><code>39dc667</code></a> (2023-01-18 22:04:09 +0100). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/e6b4062359bace87cec4752828cb9a5159d4bd16"><code>e6b4062</code></a> (2023-01-20 09:59:28 +0100). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -3646,6 +3646,7 @@ packets.</p>
 <tr><td>$16</td><td><a href="SGB_Command_Attribute.html#sgb-command-16--attr_set">ATTR_SET</a></td><td>Set Data to ATF</td></tr>
 <tr><td>$17</td><td><a href="SGB_Command_System.html#sgb-command-17--mask_en">MASK_EN</a></td><td>Game Boy Window Mask</td></tr>
 <tr><td>$18</td><td><a href="SGB_Command_Border.html#sgb-command-18--obj_trn">OBJ_TRN</a></td><td>Super NES OBJ Mode</td></tr>
+<tr><td>$19</td><td><a href="SGB_Command_Palettes.html#sgb-command-19--pal_pri">PAL_PRI</a></td><td>System palette priority</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="palette-commands"><a class="header" href="#palette-commands">Palette Commands</a></h1>
 <h2 id="sgb-command-00--pal01"><a class="header" href="#sgb-command-00--pal01">SGB Command $00 — PAL01</a></h2>
@@ -3706,6 +3707,16 @@ colors).</p>
 </code></pre>
 <p>Each Palette consists of four 16-bit color definitions (8 bytes). Note:
 The data is stored at 3000h-3FFFh in SNES memory.</p>
+<h2 id="sgb-command-19--pal_pri"><a class="header" href="#sgb-command-19--pal_pri">SGB Command $19 — PAL_PRI</a></h2>
+<p>If the player overrides the active palette set (a pre-defined or the custom one), it stays in effect until the smiley face is selected again, or the player presses the X button on their SNES controller.</p>
+<p>However, if <code>PAL_PRI</code> is enabled, then changing the palette set (via any of the above commands except <code>PAL_TRN</code>) will switch back to the game’s newly-modified palette set, if it wasn’t already active.</p>
+<p><em>Donkey Kong</em> (1994) is one known game that appears to use this.</p>
+<pre><code> Byte  Content
+ 0     Command*8+Length (fixed length=1)
+ 1     Palette priority when a palette packet is sent
+         Bit 0 - Priority (0=User, 1=Software)
+ 2-F   Not used (zero)
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="color-attribute-commands"><a class="header" href="#color-attribute-commands">Color Attribute Commands</a></h1>
 <h2 id="sgb-command-04--attr_blk"><a class="header" href="#sgb-command-04--attr_blk">SGB Command $04 — ATTR_BLK</a></h2>
 <p>Used to specify color attributes for the inside or outside of one or
@@ -4266,15 +4277,11 @@ The other bit specifies the OBJ size (8x8 or 16x16 pixels).</p>
 <p>The following information has been extracted from disassembling a SGB1v2
 firmware; it should be verified on other SGB revisions.</p>
 <p>The SGB firmware explicitly ignores all commands with ID &gt;= $1E. This
-leaves undocumented commands $19 to $1D inclusive.</p>
+leaves undocumented commands $1A to $1D inclusive.</p>
 <h2 id="stubbed-commands"><a class="header" href="#stubbed-commands">Stubbed commands</a></h2>
 <p>Commands $1A to $1F (inclusive)’s handlers are stubs (only contain an
 <code>RTS</code>). This is interesting, since the command-processing function
 explicitly ignores commands $1E and $1F.</p>
-<h2 id="sgb-command-19"><a class="header" href="#sgb-command-19">SGB command $19</a></h2>
-<p>The game <em>Donkey Kong</em> (1994) appears to send this command, and it appears
-to set a flag in the SGB’s memory. It’s not known yet what it does,
-though.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="cpu-registers-and-flags"><a class="header" href="#cpu-registers-and-flags">CPU registers and flags</a></h1>
 <h2 id="registers"><a class="header" href="#registers">Registers</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>16-bit</th><th>Hi</th><th>Lo</th><th>Name/Function</th></tr></thead><tbody>
