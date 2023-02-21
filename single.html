@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/ae324fe0a58e73eb0cc1d4595a64c4d5d69ef371"><code>ae324fe</code></a> (2023-01-22 18:13:11 +0100). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/d15ccd6ac0f9cdeaa15c46817f195e70e183ef91"><code>d15ccd6</code></a> (2023-02-21 10:23:59 +0100). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -5012,7 +5012,7 @@ ROM.</p>
 <p>In 1 MiB and larger cartridges (that use the 2-bit second banking register for extended ROM banking), entering mode 1 (see below) will allow that second banking register to apply to reads from this region in addition to the regular 4000–7FFF banked region, resulting in accessing banks $20/$40/$60 for regular large ROM carts, or banks $10/$20/$30 for an MBC1M multi-cart (see note below).</p>
 <h3 id="40007fff--rom-bank-01-7f-read-only"><a class="header" href="#40007fff--rom-bank-01-7f-read-only">4000–7FFF — ROM Bank 01-7F [read-only]</a></h3>
 <p>This area may contain any of the further 16 KiB banks of the ROM. If the main 5-bit ROM banking register is 0, it reads the bank as if it was set to 1.</p>
-<p>For 1 MiB+ ROM, this means any bank that is possible to accessible via the 0000–3FFF region is not accessible in this region. i.e. banks $00/$20/$40/$60 in regular large ROM carts, or banks $00/$01/$20/$30 in MBC1m multi-game compilation carts. Instead, it automatically maps to 1 bank
+<p>For 1 MiB+ ROM, this means any bank that is possible to accessible via the 0000–3FFF region is not accessible in this region. i.e. banks $00/$20/$40/$60 in regular large ROM carts, or banks $00/$10/$20/$30 in MBC1M multi-game compilation carts. Instead, it automatically maps to 1 bank
 higher ($01/$21/$41/$61 or $01/$11/$21/$31 respectively).</p>
 <h3 id="a000bfff--ram-bank-0003-if-any"><a class="header" href="#a000bfff--ram-bank-0003-if-any">A000–BFFF — RAM Bank 00–03, if any</a></h3>
 <p>This area is used to address external RAM in the cartridge (if any). The RAM is only accessible if RAM is enabled, otherwise reads return open bus values (often $FF, but not guaranteed) and writes are ignored.</p>
