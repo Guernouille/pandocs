@@ -187,9 +187,9 @@ single RTC Register.</p>
 writing to external RAM - and to the RTC Registers! A value of 00h will
 disable either.</p>
 <h3 id="2000-3fff---rom-bank-number-write-only"><a class="header" href="#2000-3fff---rom-bank-number-write-only">2000-3FFF - ROM Bank Number (Write Only)</a></h3>
-<p>Same as for MBC1, except that the whole 7 bits of the RAM Bank Number
+<p>Same as for MBC1, except that the whole 7 bits of the ROM Bank Number
 are written directly to this address. As for the MBC1, writing a value
-of 00h, will select Bank 01h instead. All other values 01-7Fh select the
+of 00h will select Bank 01h instead. All other values 01-7Fh select the
 corresponding ROM Banks.</p>
 <h3 id="4000-5fff---ram-bank-number---or---rtc-register-select-write-only"><a class="header" href="#4000-5fff---ram-bank-number---or---rtc-register-select-write-only">4000-5FFF - RAM Bank Number - or - RTC Register Select (Write Only)</a></h3>
 <p>As for the MBC1s RAM Banking Mode, writing a value in range for 00h-03h

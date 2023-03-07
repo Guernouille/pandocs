@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/d15ccd6ac0f9cdeaa15c46817f195e70e183ef91"><code>d15ccd6</code></a> (2023-02-21 10:23:59 +0100). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/4814bb2814265242d24551b48eba1cbd152a351b"><code>4814bb2</code></a> (2023-03-07 20:55:26 +0100). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -5216,9 +5216,9 @@ single RTC Register.</p>
 writing to external RAM - and to the RTC Registers! A value of 00h will
 disable either.</p>
 <h3 id="2000-3fff---rom-bank-number-write-only"><a class="header" href="#2000-3fff---rom-bank-number-write-only">2000-3FFF - ROM Bank Number (Write Only)</a></h3>
-<p>Same as for MBC1, except that the whole 7 bits of the RAM Bank Number
+<p>Same as for MBC1, except that the whole 7 bits of the ROM Bank Number
 are written directly to this address. As for the MBC1, writing a value
-of 00h, will select Bank 01h instead. All other values 01-7Fh select the
+of 00h will select Bank 01h instead. All other values 01-7Fh select the
 corresponding ROM Banks.</p>
 <h3 id="4000-5fff---ram-bank-number---or---rtc-register-select-write-only"><a class="header" href="#4000-5fff---ram-bank-number---or---rtc-register-select-write-only">4000-5FFF - RAM Bank Number - or - RTC Register Select (Write Only)</a></h3>
 <p>As for the MBC1s RAM Banking Mode, writing a value in range for 00h-03h
