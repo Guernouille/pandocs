@@ -199,7 +199,7 @@ by the Game Boy’s BGP, OBP0, and OBP1 registers. There is thus no fixed
 relationship between Game Boy colors 0-3 and SNES colors 0-3.</p>
 <h3 id="using-game-boy-bgpobp-registers"><a class="header" href="#using-game-boy-bgpobp-registers">Using Game Boy BGP/OBP Registers</a></h3>
 <p>A direct translation of GB color 0-3 into SNES color 0-3 may be produced
-by setting BGP/OBPx registers to a value of 0E4h each. However, in case
+by setting BGP/OBPx registers to a value of $0E4 each. However, in case
 that your program uses black background for example, then you may
 internally assign background as “White” at the Game Boy side by BGP/OBP
 registers (which is then interpreted as SNES color 0, which is shared

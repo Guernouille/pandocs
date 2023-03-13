@@ -187,7 +187,7 @@ higher ($01/$21/$41/$61 or $01/$11/$21/$31 respectively).</p>
 <p>Available RAM sizes are 8 KiB (at $A000–BFFF) and 32 KiB (in form of four 8K banks at $A000–BFFF). 32 KiB is only available in cartridges with ROM &lt;= 512 KiB.</p>
 <p>External RAM is often battery-backed, allowing for the storage of game data while the Game Boy is turned off, or if the cartridge is removed from the Game Boy. External RAM is no slower than the Game Boy’s internal RAM, so many games use part of the external RAM as extra working RAM, even if they use another part of it for battery-backed saves.</p>
 <h2 id="registers"><a class="header" href="#registers">Registers</a></h2>
-<p>All of the MBC1 registers default to 00h on power-up, which for the “ROM Bank Number” register is <em>treated as</em> 01h.</p>
+<p>All of the MBC1 registers default to $00 on power-up, which for the “ROM Bank Number” register is <em>treated as</em> $01.</p>
 <h3 id="00001fff--ram-enable-write-only"><a class="header" href="#00001fff--ram-enable-write-only">0000–1FFF — RAM Enable (Write Only)</a></h3>
 <p>Before external RAM can be read or written, it must be enabled by
 writing $A to this address space.
@@ -217,7 +217,7 @@ effective bank number:
 <div class="footnote-definition" id="MBC1M_banking"><sup class="footnote-definition-label">1</sup>
 <p>MBC1M has a different formula, see below</p>
 </div>
-<p>These additional two bits are ignored for the bank 00→01 translation. This causes a problem — attempting to access banks 20h, 40h, and 60h only set bits in the upper 2-bit register, with the lower 5-bit register set to 00. As a result, any
+<p>These additional two bits are ignored for the bank 00→01 translation. This causes a problem — attempting to access banks $20, $40, and $60 only set bits in the upper 2-bit register, with the lower 5-bit register set to 00. As a result, any
 attempt to address these ROM Banks will select Bank $21, $41 and $61
 instead. The only way to access banks $20, $40 or $60 at all is to enter mode 1,
 which remaps the 0000–3FFF range. This has its own problems for game

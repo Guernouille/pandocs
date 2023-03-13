@@ -166,13 +166,13 @@
 <p>Transmit color data for SGB palette 0, color 0-3, and for SGB palette 1,
 color 1-3 (without separate color 0).</p>
 <pre><code> Byte  Content
- 0     Command*8+Length (fixed length=01h)
+ 0     Command*8+Length (fixed length=$01)
  1-E   Color Data for 7 colors of 2 bytes (16 bits) each:
          Bit 0-4   - Red Intensity   (0-31)
          Bit 5-9   - Green Intensity (0-31)
          Bit 10-14 - Blue Intensity  (0-31)
          Bit 15    - Not used (zero)
- F     Not used (00h)
+ F     Not used ($00)
 </code></pre>
 <p>This is the same RGB5 format as <a href="Palettes.html#lcd-color-palettes-cgb-only">Game Boy Color palette
 entry</a>, though
@@ -195,7 +195,7 @@ actual SNES palettes.</p>
  5-6   System Palette number for SGB Color Palette 2 (0-511)
  7-8   System Palette number for SGB Color Palette 3 (0-511)
  9     Attribute File
-         Bit 0-5 - Attribute File Number (00h-2Ch) (Used only if Bit7=1)
+         Bit 0-5 - Attribute File Number ($00-$2C) (Used only if Bit7=1)
          Bit 6   - Cancel Mask           (0=No change, 1=Yes)
          Bit 7   - Use Attribute File    (0=No, 1=Apply above ATF Number)
  A-F   Not used (zero)
@@ -219,7 +219,7 @@ colors).</p>
 <pre><code> 000-FFF  Data for System Color Palette 0-511
 </code></pre>
 <p>Each Palette consists of four 16-bit color definitions (8 bytes). Note:
-The data is stored at 3000h-3FFFh in SNES memory.</p>
+The data is stored at 3000-3FFF in SNES memory.</p>
 <h2 id="sgb-command-19--pal_pri"><a class="header" href="#sgb-command-19--pal_pri">SGB Command $19 — PAL_PRI</a></h2>
 <p>If the player overrides the active palette set (a pre-defined or the custom one), it stays in effect until the smiley face is selected again, or the player presses the X button on their SNES controller.</p>
 <p>However, if <code>PAL_PRI</code> is enabled, then changing the palette set (via any of the above commands except <code>PAL_TRN</code>) will switch back to the game’s newly-modified palette set, if it wasn’t already active.</p>

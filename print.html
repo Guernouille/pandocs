@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/4814bb2814265242d24551b48eba1cbd152a351b"><code>4814bb2</code></a> (2023-03-07 20:55:26 +0100). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/cb2d3104bb4795a386b34021a1ff22f463a12887"><code>cb2d310</code></a> (2023-03-13 11:00:43 +0100). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -2935,7 +2935,7 @@ every device.</p>
 set to 1, but this doesnt happen immediately. Timer interrupt is
 delayed 1 cycle (4 clocks) from the TIMA overflow. The TMA reload to
 TIMA is also delayed. For one cycle, after overflowing TIMA, the value
-in TIMA is 00h, not TMA. This happens only when an overflow happens, not
+in TIMA is $00, not TMA. This happens only when an overflow happens, not
 when the upper bit goes from 1 to 0, it cant be done manually writing
 to TIMA, the timer has to increment itself.</p>
 <p>For example (SYS is the system internal counter divided by 4 for easier
@@ -3185,15 +3185,15 @@ Transfers, and changed meaning of Bit 0 of LCDC Control register). Also,
 a changed bit is noted in the chapter about the Serial/Link port.</p>
 <h2 id="unlocking-cgb-functions"><a class="header" href="#unlocking-cgb-functions">Unlocking CGB functions</a></h2>
 <p>When using any CGB registers (including those in the Video/Link
-chapters), you must first unlock CGB features by changing byte 0143h in
-the cartridge header. Typically, use a value of 80h for games which
-support both CGB and monochrome Game Boy systems, and C0h for games which work
+chapters), you must first unlock CGB features by changing byte 0143 in
+the cartridge header. Typically, use a value of $80 for games which
+support both CGB and monochrome Game Boy systems, and $C0 for games which work
 on CGBs only. Otherwise, the CGB will operate in monochrome “Non CGB”
 compatibility mode.</p>
 <h2 id="detecting-cgb-and-gba-functions"><a class="header" href="#detecting-cgb-and-gba-functions">Detecting CGB (and GBA) functions</a></h2>
 <p>CGB hardware can be detected by examining the CPU accumulator (A-register)
-directly after startup. A value of 11h indicates CGB (or GBA) hardware,
-if so, CGB functions can be used (if unlocked, see above). When A=11h,
+directly after startup. A value of $11 indicates CGB (or GBA) hardware,
+if so, CGB functions can be used (if unlocked, see above). When A=$11,
 you may also examine Bit 0 of the CPUs B-Register to separate between
 CGB (bit cleared) and GBA (bit set), by that detection it is possible to
 use “repaired” color palette data matching for GBA displays.</p>
@@ -3218,8 +3218,8 @@ Destination Start Address may be located at 8000-9FF0, the lower four
 bits of the address are ignored (treated as zero), the upper 3 bits are
 ignored either (destination is always in VRAM).</p>
 <p>Writing to this register starts the transfer, the lower 7 bits of which
-specify the Transfer Length (divided by 10h, minus 1), that is, lengths of
-10h-800h bytes can be defined by the values 00h-7Fh. The upper bit
+specify the Transfer Length (divided by $10, minus 1), that is, lengths of
+$10-$800 bytes can be defined by the values $00-$7F. The upper bit
 indicates the Transfer Mode:</p>
 <h5 id="bit-7--0--general-purpose-dma"><a class="header" href="#bit-7--0--general-purpose-dma">Bit 7 = 0 — General-Purpose DMA</a></h5>
 <p>When using this transfer method,
@@ -3229,9 +3229,9 @@ blindly attempts to copy the data, even if the LCD controller is
 currently accessing VRAM. So General Purpose DMA should be used only if
 the Display is disabled, or during VBlank, or (for rather short blocks)
 during HBlank. The execution of the program continues when the transfer
-has been completed, and FF55 then contains a value of FFh.</p>
+has been completed, and FF55 then contains a value of $FF.</p>
 <h5 id="bit-7--1--hblank-dma"><a class="header" href="#bit-7--1--hblank-dma">Bit 7 = 1 — HBlank DMA</a></h5>
-<p>The HBlank DMA transfers 10h bytes of
+<p>The HBlank DMA transfers $10 bytes of
 data during each HBlank, that is, at LY=0-143, no data is transferred during
 VBlank (LY=144-153), but the transfer will then continue at LY=00. The
 execution of the program is halted during the separate transfers, but
@@ -3240,8 +3240,8 @@ block. Note that the program should not change the Destination VRAM bank
 (FF4F), or the Source ROM/RAM bank (in case data is transferred from
 bankable memory) until the transfer has completed! (The transfer should
 be paused as described below while the banks are switched)</p>
-<p>Reading from Register FF55 returns the remaining length (divided by 10h,
-minus 1), a value of 0FFh indicates that the transfer has completed. It
+<p>Reading from Register FF55 returns the remaining length (divided by $10,
+minus 1), a value of $FF indicates that the transfer has completed. It
 is also possible to terminate an active HBlank transfer by writing zero
 to Bit 7 of FF55. In that case reading from FF55 will return how many
 $10 “blocks” remained (minus 1) in the lower 7 bits, but Bit 7 will
@@ -3328,7 +3328,7 @@ different results depending on the <a href="STAT.html#ff41--stat-lcd-status">STA
 Infrared Port. When reading data, bit 6 and 7 must be set (and obviously
 Bit 0 must be cleared — if you don’t want to receive your own Game Boy’s
 IR signal). After sending or receiving data you should reset the
-register to 00h to reduce battery power consumption again.</p>
+register to $00 to reduce battery power consumption again.</p>
 <pre><code> Bit 0:   Write Data   (0=LED Off, 1=LED On)             (Read/Write)
  Bit 1:   Read Data    (0=Receiving IR Signal, 1=Normal) (Read Only)
  Bit 6-7: Data Read Enable (0=Disable, 3=Enable)         (Read/Write)
@@ -3357,7 +3357,7 @@ into 8 banks of 4 KBytes each. Bank 0 is always available in memory at
 C000-CFFF, Bank 1-7 can be selected into the address space at D000-DFFF.</p>
 <pre><code> Bit 0-2  Select WRAM Bank (Read/Write)
 </code></pre>
-<p>Writing a value of 01h-07h will select Bank 1-7, writing a value of 00h
+<p>Writing a value of $01-$07 will select Bank 1-7, writing a value of $00
 will select Bank 1 too.</p>
 <h2 id="undocumented-registers"><a class="header" href="#undocumented-registers">Undocumented registers</a></h2>
 <p>These are undocumented CGB Registers. The purpose of these registers is
@@ -3549,8 +3549,7 @@ to the SNES. However, unlike the C register method, this detection works only wh
 SGB functions <a href="SGB_Unlocking.html#cartridge-header">are unlocked from the cartridge header</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="command-packet-transfers"><a class="header" href="#command-packet-transfers">Command Packet Transfers</a></h1>
 <p>Command packets (aka Register Files) are transferred from the Game Boy to
-the SNES by using P14 and P15 output lines of the JOYPAD register
-(FF00h).  These same lines are also used to select the two rows in the
+the SNES by using P14 and P15 output lines of <a href="Joypad_Input.html#ff00--p1joyp-joypad">the JOYPAD register</a> (FF00).  These same lines are also used to select the two rows in the
 Game Boy keyboard matrix (which still works).</p>
 <h2 id="transferring-bits"><a class="header" href="#transferring-bits">Transferring Bits</a></h2>
 <p>A command packet transfer must be initiated by setting both P14 and P15
@@ -3603,16 +3602,16 @@ first sending one of the commands with the ending _TRN (by using normal
 packet transfer), the 4K data block is then read-out by the SNES from
 Game Boy display memory during the next frame.</p>
 <h2 id="transfer-data"><a class="header" href="#transfer-data">Transfer Data</a></h2>
-<p>Normally, transfer data should be stored at 8000h-8FFFh in Game Boy VRAM,
+<p>Normally, transfer data should be stored at 8000-8FFF in Game Boy VRAM,
 even though the SNES receives the data in from display scanlines, it
 will automatically re-produce the same ordering of bits and bytes, as
-being originally stored at 8000h-8FFFh in Game Boy memory.</p>
+being originally stored at 8000-8FFF in Game Boy memory.</p>
 <h2 id="preparing-the-display"><a class="header" href="#preparing-the-display">Preparing the Display</a></h2>
 <p>The above method works only when recursing the following things: BG Map
-must display unsigned characters 00h-FFh on the screen; 00h..13h in
-first line, 14h..27h in next line, etc. The Game Boy display must be
+must display unsigned characters $00-$FF on the screen; $00..$13 in
+first line, $14..$27 in next line, etc. The Game Boy display must be
 enabled, the display may not be scrolled, OBJ sprites should not overlap
-the background tiles, the BGP palette register must be set to E4h.</p>
+the background tiles, the BGP palette register must be set to $E4.</p>
 <h2 id="transfer-time"><a class="header" href="#transfer-time">Transfer Time</a></h2>
 <p>Note that the transfer data should be prepared in VRAM <strong>before</strong> sending
 the transfer command packet. The actual transfer starts at the beginning
@@ -3666,7 +3665,7 @@ by the Game Boy’s BGP, OBP0, and OBP1 registers. There is thus no fixed
 relationship between Game Boy colors 0-3 and SNES colors 0-3.</p>
 <h3 id="using-game-boy-bgpobp-registers"><a class="header" href="#using-game-boy-bgpobp-registers">Using Game Boy BGP/OBP Registers</a></h3>
 <p>A direct translation of GB color 0-3 into SNES color 0-3 may be produced
-by setting BGP/OBPx registers to a value of 0E4h each. However, in case
+by setting BGP/OBPx registers to a value of $0E4 each. However, in case
 that your program uses black background for example, then you may
 internally assign background as “White” at the Game Boy side by BGP/OBP
 registers (which is then interpreted as SNES color 0, which is shared
@@ -3715,13 +3714,13 @@ packets.</p>
 <p>Transmit color data for SGB palette 0, color 0-3, and for SGB palette 1,
 color 1-3 (without separate color 0).</p>
 <pre><code> Byte  Content
- 0     Command*8+Length (fixed length=01h)
+ 0     Command*8+Length (fixed length=$01)
  1-E   Color Data for 7 colors of 2 bytes (16 bits) each:
          Bit 0-4   - Red Intensity   (0-31)
          Bit 5-9   - Green Intensity (0-31)
          Bit 10-14 - Blue Intensity  (0-31)
          Bit 15    - Not used (zero)
- F     Not used (00h)
+ F     Not used ($00)
 </code></pre>
 <p>This is the same RGB5 format as <a href="Palettes.html#lcd-color-palettes-cgb-only">Game Boy Color palette
 entry</a>, though
@@ -3744,7 +3743,7 @@ actual SNES palettes.</p>
  5-6   System Palette number for SGB Color Palette 2 (0-511)
  7-8   System Palette number for SGB Color Palette 3 (0-511)
  9     Attribute File
-         Bit 0-5 - Attribute File Number (00h-2Ch) (Used only if Bit7=1)
+         Bit 0-5 - Attribute File Number ($00-$2C) (Used only if Bit7=1)
          Bit 6   - Cancel Mask           (0=No change, 1=Yes)
          Bit 7   - Use Attribute File    (0=No, 1=Apply above ATF Number)
  A-F   Not used (zero)
@@ -3768,7 +3767,7 @@ colors).</p>
 <pre><code> 000-FFF  Data for System Color Palette 0-511
 </code></pre>
 <p>Each Palette consists of four 16-bit color definitions (8 bytes). Note:
-The data is stored at 3000h-3FFFh in SNES memory.</p>
+The data is stored at 3000-3FFF in SNES memory.</p>
 <h2 id="sgb-command-19--pal_pri"><a class="header" href="#sgb-command-19--pal_pri">SGB Command $19 — PAL_PRI</a></h2>
 <p>If the player overrides the active palette set (a pre-defined or the custom one), it stays in effect until the smiley face is selected again, or the player presses the X button on their SNES controller.</p>
 <p>However, if <code>PAL_PRI</code> is enabled, then changing the palette set (via any of the above commands except <code>PAL_TRN</code>) will switch back to the game’s newly-modified palette set, if it wasn’t already active.</p>
@@ -3785,7 +3784,7 @@ The data is stored at 3000h-3FFFh in SNES memory.</p>
 more rectangular screen regions.</p>
 <pre><code> Byte  Content
  0     Command*8+Length (length=1..7)
- 1     Number of Data Sets (01h..12h)
+ 1     Number of Data Sets ($01..$12)
  2-7   Data Set #1
          Byte 0 - Control Code (0-7)
            Bit 0 - Change Colors inside of surrounded area     (1=Yes)
@@ -3815,7 +3814,7 @@ zero. The format of the separate Data Sets is described below.</p>
 character lines.</p>
 <pre><code> Byte  Content
  0     Command*8+Length (length=1..7)
- 1     Number of Data Sets (01h..6Eh) (one byte each)
+ 1     Number of Data Sets ($01..$6E) (one byte each)
  2     Data Set #1
          Bit 0-4 - Line Number    (X- or Y-coordinate, depending on bit 7)
          Bit 5-6 - Palette Number (0-3)
@@ -3885,7 +3884,7 @@ so on.</p>
 <p>Used to transfer attributes from Attribute File (ATF) to Game Boy window.</p>
 <pre><code> Byte  Content
  0     Command*8+Length (fixed length=1)
- 1     Attribute File Number (00-2Ch), Bit 6=Cancel Mask
+ 1     Attribute File Number ($00-$2C), Bit 6=Cancel Mask
  2-F   Not used (zero)
 </code></pre>
 <p>When above Bit 6 is set, the Game Boy screen becomes re-enabled after the
@@ -4113,7 +4112,7 @@ games.</p>
  1     SNES Destination Address, low
  2     SNES Destination Address, high
  3     SNES Destination Address, bank number
- 4     Number of bytes to write (01h-0Bh)
+ 4     Number of bytes to write ($01-$0B)
  5     Data Byte #1
  6     Data Byte #2 (if any)
  7     Data Byte #3 (if any)
@@ -4122,7 +4121,7 @@ games.</p>
 <p>Unused bytes at the end of the packet should be set to zero, this
 function is restricted to a single packet, so that not more than 11
 bytes can be defined at once. Free Addresses in SNES memory are Bank 0
-1800h-1FFFh, Bank 7Fh 0000h-FFFFh.</p>
+1800-1FFF, Bank $7F 0000-FFFF.</p>
 <h2 id="sgb-command-10--data_trn"><a class="header" href="#sgb-command-10--data_trn">SGB Command $10 — DATA_TRN</a></h2>
 <p>Used to transfer binary code or data directly into SNES RAM.</p>
 <pre><code> Byte  Content
@@ -4135,9 +4134,9 @@ bytes can be defined at once. Free Addresses in SNES memory are Bank 0
 <p>The data is sent by VRAM-Transfer (4 KBytes).</p>
 <pre><code> 000-FFF  Data
 </code></pre>
-<p>Free Addresses in SNES memory are Bank 0 1800h-1FFFh, Bank 7Fh
-0000h-FFFFh. The transfer length is fixed at 4KBytes ???, so that
-directly writing to the free 2KBytes at 0:1800h would be a not so good
+<p>Free Addresses in SNES memory are Bank 0 1800-1FFF, Bank $7F
+0000-FFFF. The transfer length is fixed at 4KBytes ???, so that
+directly writing to the free 2KBytes at 0:1800 would be a not so good
 idea ???</p>
 <h2 id="sgb-command-12--jump"><a class="header" href="#sgb-command-12--jump">SGB Command $12 — JUMP</a></h2>
 <p>Used to set the SNES program counter and NMI (vblank interrupt) handler
@@ -4223,7 +4222,7 @@ OBJ_TRN).</p>
 <pre><code> Byte  Content
  0     Command*8+Length    (fixed length=1)
  1     Tile Transfer Destination
-         Bit 0   - Tile Numbers   (0=Tiles 00h-7Fh, 1=Tiles 80h-FFh)
+         Bit 0   - Tile Numbers   (0=Tiles $00-$7F, 1=Tiles $80-$FF)
          Bit 1   - Tile Type      (0=BG Tiles, 1=OBJ Tiles)
          Bit 2-7 - Not used (zero)
  2-F   Not used (zero)
@@ -4233,7 +4232,7 @@ OBJ_TRN).</p>
 </code></pre>
 <p>Each tile occupies 32 bytes (8x8 pixels, 16 colors each). When intending
 to transfer more than 128 tiles, call this function twice (once for
-tiles 00h-7Fh, and once for tiles 80h-FFh). Note: The BG/OBJ Bit seems
+tiles $00-$7F, and once for tiles $80-$FF). Note: The BG/OBJ Bit seems
 to have no effect and writes to the same VRAM addresses for both BG and
 OBJ ???</p>
 <p>Each tile is stored in 4-bit-per-pixel format consisting of bit planes 0 and 1 interleaved by row, followed by bit planes 2 and 3 interleaved by row.
@@ -4254,7 +4253,7 @@ transferred by using the CHR_TRN function.</p>
 </code></pre>
 <p>Each BG Map Entry consists of a 16-bit value as such:
 `VH01 PP00 NNNN NNNN```</p>
-<pre><code> Bit 0-9   - Character Number (use only 00h-FFh, upper 2 bits zero)
+<pre><code> Bit 0-9   - Character Number (use only $00-$FF, upper 2 bits zero)
  Bit 10-12 - Palette Number   (use only 4-6)
  Bit 13    - BG Priority      (use only 0)
  Bit 14    - X-Flip           (0=Normal, 1=Mirror horizontally)
@@ -4310,12 +4309,12 @@ whatever that means ???</p>
          system palettes 511, 0, 1, 2 to the SNES OBJ palette.
  A-F   Not used (zero)
 </code></pre>
-<p>The recommended method is to “display” Game Boy BG tiles F9h..FFh from
+<p>The recommended method is to “display” Game Boy BG tiles $F9..$FF from
 left to right as first 7 characters of the bottom-most character line of
 the Game Boy screen. As for normal 4KByte VRAM transfers, this area
 should not be scrolled, should not be overlapped by Game Boy OBJs, and
 the Game Boy BGP palette register should be set up properly. By following
-that method, SNES OAM data can be defined in the 70h bytes of the
+that method, SNES OAM data can be defined in the $70 bytes of the
 Game Boy BG tile memory at following addresses:</p>
 <pre><code> 8F90-8FEF  SNES OAM, 24 Entries of 4 bytes each (96 bytes)
  8FF0-8FF5  SNES OAM MSBs, 24 Entries of 2 bits each (6 bytes)
@@ -4325,7 +4324,7 @@ Game Boy BG tile memory at following addresses:</p>
 <pre><code>  Byte 0  OBJ X-Position (0-511, MSB is separately stored, see below)
   Byte 1  OBJ Y-Position (0-255)
   Byte 2-3  Attributes (16bit)
-    Bit 0-8    Tile Number     (use only 00h-FFh, upper bit zero)
+    Bit 0-8    Tile Number     (use only $00-$FF, upper bit zero)
     Bit 9-11   Palette Number  (use only 4-7)
     Bit 12-13  OBJ Priority    (use only 3)
     Bit 14     X-Flip          (0=Normal, 1=Mirror horizontally)
@@ -5019,7 +5018,7 @@ higher ($01/$21/$41/$61 or $01/$11/$21/$31 respectively).</p>
 <p>Available RAM sizes are 8 KiB (at $A000–BFFF) and 32 KiB (in form of four 8K banks at $A000–BFFF). 32 KiB is only available in cartridges with ROM &lt;= 512 KiB.</p>
 <p>External RAM is often battery-backed, allowing for the storage of game data while the Game Boy is turned off, or if the cartridge is removed from the Game Boy. External RAM is no slower than the Game Boy’s internal RAM, so many games use part of the external RAM as extra working RAM, even if they use another part of it for battery-backed saves.</p>
 <h2 id="registers-1"><a class="header" href="#registers-1">Registers</a></h2>
-<p>All of the MBC1 registers default to 00h on power-up, which for the “ROM Bank Number” register is <em>treated as</em> 01h.</p>
+<p>All of the MBC1 registers default to $00 on power-up, which for the “ROM Bank Number” register is <em>treated as</em> $01.</p>
 <h3 id="00001fff--ram-enable-write-only"><a class="header" href="#00001fff--ram-enable-write-only">0000–1FFF — RAM Enable (Write Only)</a></h3>
 <p>Before external RAM can be read or written, it must be enabled by
 writing $A to this address space.
@@ -5049,7 +5048,7 @@ effective bank number:
 <div class="footnote-definition" id="MBC1M_banking"><sup class="footnote-definition-label">1</sup>
 <p>MBC1M has a different formula, see below</p>
 </div>
-<p>These additional two bits are ignored for the bank 00→01 translation. This causes a problem — attempting to access banks 20h, 40h, and 60h only set bits in the upper 2-bit register, with the lower 5-bit register set to 00. As a result, any
+<p>These additional two bits are ignored for the bank 00→01 translation. This causes a problem — attempting to access banks $20, $40, and $60 only set bits in the upper 2-bit register, with the lower 5-bit register set to 00. As a result, any
 attempt to address these ROM Banks will select Bank $21, $41 and $61
 instead. The only way to access banks $20, $40 or $60 at all is to enter mode 1,
 which remaps the 0000–3FFF range. This has its own problems for game
@@ -5200,7 +5199,7 @@ battery (if it should continue to tick when the Game Boy is turned off).</p>
 <h3 id="0000-3fff---rom-bank-00-read-only"><a class="header" href="#0000-3fff---rom-bank-00-read-only">0000-3FFF - ROM Bank 00 (Read Only)</a></h3>
 <p>Contains the first 16 KiB of the ROM.</p>
 <h3 id="4000-7fff---rom-bank-01-7f-read-only"><a class="header" href="#4000-7fff---rom-bank-01-7f-read-only">4000-7FFF - ROM Bank 01-7F (Read Only)</a></h3>
-<p>Same as for MBC1, except that accessing banks 20h, 40h, and 60h is
+<p>Same as for MBC1, except that accessing banks $20, $40, and $60 is
 supported now.</p>
 <h3 id="a000-bfff---ram-bank-00-03-if-any-readwrite"><a class="header" href="#a000-bfff---ram-bank-00-03-if-any-readwrite">A000-BFFF - RAM Bank 00-03, if any (Read/Write)</a></h3>
 <p>Depending on the current Bank Number/RTC Register selection (see below),
@@ -5212,33 +5211,33 @@ single RTC Register.</p>
 this memory space is used to access an 8KByte external RAM Bank, or a
 single RTC Register.</p>
 <h3 id="0000-1fff---ram-and-timer-enable-write-only"><a class="header" href="#0000-1fff---ram-and-timer-enable-write-only">0000-1FFF - RAM and Timer Enable (Write Only)</a></h3>
-<p>Mostly the same as for MBC1, a value of 0Ah will enable reading and
-writing to external RAM - and to the RTC Registers! A value of 00h will
+<p>Mostly the same as for MBC1, a value of $0A will enable reading and
+writing to external RAM - and to the RTC Registers! A value of $00 will
 disable either.</p>
 <h3 id="2000-3fff---rom-bank-number-write-only"><a class="header" href="#2000-3fff---rom-bank-number-write-only">2000-3FFF - ROM Bank Number (Write Only)</a></h3>
 <p>Same as for MBC1, except that the whole 7 bits of the ROM Bank Number
 are written directly to this address. As for the MBC1, writing a value
-of 00h will select Bank 01h instead. All other values 01-7Fh select the
+of $00 will select Bank $01 instead. All other values $01-$7F select the
 corresponding ROM Banks.</p>
 <h3 id="4000-5fff---ram-bank-number---or---rtc-register-select-write-only"><a class="header" href="#4000-5fff---ram-bank-number---or---rtc-register-select-write-only">4000-5FFF - RAM Bank Number - or - RTC Register Select (Write Only)</a></h3>
-<p>As for the MBC1s RAM Banking Mode, writing a value in range for 00h-03h
+<p>As for the MBC1s RAM Banking Mode, writing a value in range for $00-$03
 maps the corresponding external RAM Bank (if any) into memory at
-A000-BFFF. When writing a value of 08h-0Ch, this will map the
+A000-BFFF. When writing a value of $08-$0C, this will map the
 corresponding RTC register into memory at A000-BFFF. That register could
 then be read/written by accessing any address in that area, typically
 that is done by using address A000.</p>
 <h3 id="6000-7fff---latch-clock-data-write-only"><a class="header" href="#6000-7fff---latch-clock-data-write-only">6000-7FFF - Latch Clock Data (Write Only)</a></h3>
-<p>When writing 00h, and then 01h to this register, the current time
+<p>When writing $00, and then $01 to this register, the current time
 becomes latched into the RTC registers. The latched data will not change
-until it becomes latched again, by repeating the write 00h-&gt;01h
+until it becomes latched again, by repeating the write $00-&gt;$01
 procedure. This provides a way to read the RTC registers while the
 clock keeps ticking.</p>
 <h3 id="the-clock-counter-registers"><a class="header" href="#the-clock-counter-registers">The Clock Counter Registers</a></h3>
-<pre><code>08h  RTC S   Seconds   0-59 (0-3Bh)
-09h  RTC M   Minutes   0-59 (0-3Bh)
-0Ah  RTC H   Hours     0-23 (0-17h)
-0Bh  RTC DL  Lower 8 bits of Day Counter (0-FFh)
-0Ch  RTC DH  Upper 1 bit of Day Counter, Carry Bit, Halt Flag
+<pre><code>$08  RTC S   Seconds   0-59 ($00-$3B)
+$09  RTC M   Minutes   0-59 ($00-$3B)
+$0A  RTC H   Hours     0-23 ($00-$17)
+$0B  RTC DL  Lower 8 bits of Day Counter ($00-$FF)
+$0C  RTC DH  Upper 1 bit of Day Counter, Carry Bit, Halt Flag
       Bit 0  Most significant bit of Day Counter (Bit 8)
       Bit 6  Halt (0=Active, 1=Stop Timer)
       Bit 7  Day Counter Carry Bit (1=Counter Overflow)
@@ -5247,7 +5246,7 @@ clock keeps ticking.</p>
 Registers.</p>
 <h3 id="the-day-counter"><a class="header" href="#the-day-counter">The Day Counter</a></h3>
 <p>The total 9 bits of the Day Counter allow counting days in range from
-0-511 (0-1FFh). The Day Counter Carry Bit becomes set when this value
+0-511 ($000-$1FF). The Day Counter Carry Bit becomes set when this value
 overflows. In that case the Carry Bit remains set until the program does
 reset it. Note that you can store an offset to the Day Counter in
 battery RAM. For example, every time you read a non-zero Day Counter,
@@ -5324,8 +5323,8 @@ Bank B.</p>
 Bank A.</p>
 <h2 id="registers-5"><a class="header" href="#registers-5">Registers</a></h2>
 <h3 id="0000-03ff--ram-enable-write-only"><a class="header" href="#0000-03ff--ram-enable-write-only">0000-03FF — RAM Enable (Write Only)</a></h3>
-<p>Mostly the same as for MBC1, a value of 0Ah will enable reading and
-writing to external RAM. A value of 00h will disable it.</p>
+<p>Mostly the same as for MBC1, a value of $0A will enable reading and
+writing to external RAM. A value of $00 will disable it.</p>
 <h3 id="0400-07ff--ram-bank-a-number-write-only"><a class="header" href="#0400-07ff--ram-bank-a-number-write-only">0400-07FF — RAM Bank A Number (Write Only)</a></h3>
 <p>Select the active RAM Bank A (A000-AFFF)</p>
 <h3 id="0800-0bff--ram-bank-b-number-write-only"><a class="header" href="#0800-0bff--ram-bank-b-number-write-only">0800-0BFF — RAM Bank B Number (Write Only)</a></h3>
@@ -5405,17 +5404,17 @@ address.</p>
 <h2 id="registers-6"><a class="header" href="#registers-6">Registers</a></h2>
 <h3 id="a000-afff---ram-registers-readwrite"><a class="header" href="#a000-afff---ram-registers-readwrite">A000-AFFF - RAM Registers (Read/Write)</a></h3>
 <p>Must be enabled via 0000 and 4000 region writes (see respective
-sections), otherwise reads read FFh and writes do nothing. Registers are
+sections), otherwise reads read $FF and writes do nothing. Registers are
 addressed through bits 4-7 of the address. Bits 0-3 and 8-11 are
 ignored.</p>
 <p>Accelerometer data must be latched before reading. Data is 16-bit and
 centered at the value 81D0. Earth’s gravity affects the value by
-roughly 70h, with larger acceleration providing a larger range. Maximum
+roughly $70, with larger acceleration providing a larger range. Maximum
 range is unknown.</p>
 <h3 id="ax0xax1x---latch-accelerometer-write-only"><a class="header" href="#ax0xax1x---latch-accelerometer-write-only">Ax0x/Ax1x - Latch Accelerometer (Write Only)</a></h3>
-<p>Write 55h to Ax0x to erase the latched data (reset back to 8000) then
-AAh to Ax1x to latch the accelerometer and update the addressable
-registers. Reads return FFh. Other writes do not appear to do anything
+<p>Write $55 to Ax0x to erase the latched data (reset back to 8000) then
+$AA to Ax1x to latch the accelerometer and update the addressable
+registers. Reads return $FF. Other writes do not appear to do anything
 (Partially unconfirmed). Note that you cannot re-latch the accelerometer
 value without first erasing it; attempts to do so yield no change.</p>
 <h3 id="ax2xax3x---accelerometer-x-value-read-only"><a class="header" href="#ax2xax3x---accelerometer-x-value-read-only">Ax2x/Ax3x - Accelerometer X value (Read Only)</a></h3>
@@ -5427,7 +5426,7 @@ high byte. Reads 8000 before first latching.</p>
 bottom and higher values are towards the top), and Ax5x contains the
 high byte. Reads 8000 before first latching.</p>
 <h3 id="ax6xax7x---unknown"><a class="header" href="#ax6xax7x---unknown">Ax6x/Ax7x - Unknown</a></h3>
-<p>Ax6x always reads 00h and Ax7x always reads FFh. Possibly reserved for Z
+<p>Ax6x always reads $00 and Ax7x always reads $FF. Possibly reserved for Z
 axis, which does not exist on this accelerometer.</p>
 <h3 id="ax8x---eeprom-readwrite"><a class="header" href="#ax8x---eeprom-readwrite">Ax8x - EEPROM (Read/Write)</a></h3>
 <p>Values in this register correspond to 4 pins on the EEPROM:</p>
@@ -5444,11 +5443,11 @@ manually clocking CLK. All commands must be preceded by a 1 bit, and
 existing games precede the 1 bit with a 0 bit (though this is not
 necessary):</p>
 <ul>
-<li>Write 00h (lower CS)</li>
-<li>Write 80h (raise CS)</li>
-<li>Write C0h (shift in 0 bit)</li>
-<li>Write 82h (lower CS, raise DI)</li>
-<li>Write C2h (shift in 1 bit)</li>
+<li>Write $00 (lower CS)</li>
+<li>Write $80 (raise CS)</li>
+<li>Write $C0 (shift in 0 bit)</li>
+<li>Write $82 (lower CS, raise DI)</li>
+<li>Write $C2 (shift in 1 bit)</li>
 <li>Write command</li>
 </ul>
 <p>The following commands exist, each 10 bits (excluding data shifted in or
@@ -5474,18 +5473,18 @@ reads a 1 when the command finishes.</p>
 <p>Datasheet:
 <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/21712C.pdf">1</a></p>
 <h3 id="ax9x-axfx---unused"><a class="header" href="#ax9x-axfx---unused">Ax9x-AxFx - Unused</a></h3>
-<p>Reads out FFh.</p>
+<p>Reads out $FF.</p>
 <h3 id="b000-bfff---unknown"><a class="header" href="#b000-bfff---unknown">B000-BFFF - Unknown</a></h3>
-<p>Only seems to read out FFh.</p>
+<p>Only seems to read out $FF.</p>
 <h3 id="0000-1fff---ram-enable-1-write-only"><a class="header" href="#0000-1fff---ram-enable-1-write-only">0000-1FFF - RAM Enable 1 (Write Only)</a></h3>
-<p>Mostly the same as for MBC1, a value of 0Ah will enable reading and
-writing to RAM registers. A value of 00h will disable it. Please note
+<p>Mostly the same as for MBC1, a value of $0A will enable reading and
+writing to RAM registers. A value of $00 will disable it. Please note
 that the RAM must second be enabled in the second RAM enable section as
 well (4000-5FFF)</p>
 <h3 id="2000-3fff---rom-bank-number-write-only-1"><a class="header" href="#2000-3fff---rom-bank-number-write-only-1">2000-3FFF - ROM Bank Number (Write Only)</a></h3>
 <p>The ROM bank number goes here.</p>
 <h3 id="4000-5fff---ram-enable-2-write-only"><a class="header" href="#4000-5fff---ram-enable-2-write-only">4000-5FFF - RAM Enable 2 (Write Only)</a></h3>
-<p>Writing 40h to this region enables access to the RAM registers. Writing
+<p>Writing $40 to this region enables access to the RAM registers. Writing
 any other value appears to disable access to RAM, but this is not fully
 tested. Please note that the RAM must first be enabled in the first RAM
 enable section as well (0000-1FFF)</p>
@@ -5601,7 +5600,7 @@ For the ROM Bank Number register, this behaves as if it was set to $01.</p>
         \--------------- Bit 6: Mapping Enable
 </code></pre>
 <h4 id="bits-0-3-ram-enable"><a class="header" href="#bits-0-3-ram-enable">Bits 0-3: RAM Enable</a></h4>
-<p>As per MBC1, writing $Ah to the lower 4 bits enables the external RAM, and any other value disables it.
+<p>As per MBC1, writing $A to the lower 4 bits enables the external RAM, and any other value disables it.
 The external RAM is automatically disabled when the Game Boy is powered off or the cartridge is removed.</p>
 <h4 id="bits-4-5-ram-bank-mask"><a class="header" href="#bits-4-5-ram-bank-mask">Bits 4-5: RAM Bank Mask</a></h4>
 <p><em>Can only be changed in “unmapped” mode.</em></p>
@@ -6205,29 +6204,29 @@ It is a good idea to have the datasheet of the M64282FP, but it is very poorly e
 <p>This area may contain any ROM bank (0 included). The initial mapped bank is 01.</p>
 <!-- #### A000-BFFF - RAM Bank 00-0F (Read/Write) -->
 <h3 id="a000-bfff---cam-registers-readwrite"><a class="header" href="#a000-bfff---cam-registers-readwrite">A000-BFFF - CAM Registers (Read/Write)</a></h3>
-<p>Depending on the current RAM Bank Number, this memory space is used to access the cartridge RAM or the CAM registers. RAM can only be read if the capture unit is not working, it returns 00h otherwise.</p>
+<p>Depending on the current RAM Bank Number, this memory space is used to access the cartridge RAM or the CAM registers. RAM can only be read if the capture unit is not working, it returns $00 otherwise.</p>
 <h3 id="0000-1fff---ram-enable-write-only-2"><a class="header" href="#0000-1fff---ram-enable-write-only-2">0000-1FFF - RAM Enable (Write Only)</a></h3>
-<p>A value of 0Ah will enable writing to RAM, 00h will disable it. Reading from RAM or registers is always enabled. Writing to registers is always enabled. Disabled on reset.</p>
+<p>A value of $0A will enable writing to RAM, $00 will disable it. Reading from RAM or registers is always enabled. Writing to registers is always enabled. Disabled on reset.</p>
 <h3 id="2000-3fff---rom-bank-number-write-only-3"><a class="header" href="#2000-3fff---rom-bank-number-write-only-3">2000-3FFF - ROM Bank Number (Write Only)</a></h3>
-<p>Writing a value of 00-3Fh selects the corresponding ROM Bank for area 4000-7FFF.</p>
+<p>Writing a value of $00-$3F selects the corresponding ROM Bank for area 4000-7FFF.</p>
 <h3 id="4000-5fff---ram-bank-numbercam-registers-select-write-only"><a class="header" href="#4000-5fff---ram-bank-numbercam-registers-select-write-only">4000-5FFF - RAM Bank Number/CAM Registers Select (Write Only)</a></h3>
-<p>Writing a value in range for 00h-0Fh maps the corresponding external RAM Bank to memory at A000-BFFF. Writing any value with bit 4 set to ‘1’ will select CAM registers. Usually bank 10h is used to select the registers. All registers are mirrored every 80h bytes. RAM bank 0 selected on reset.</p>
+<p>Writing a value in range for $00-$0F maps the corresponding external RAM Bank to memory at A000-BFFF. Writing any value with bit 4 set to ‘1’ will select CAM registers. Usually bank $10 is used to select the registers. All registers are mirrored every $80 bytes. RAM bank 0 selected on reset.</p>
 <div class="box tip">
 <p class="box-title">NOTE</p><p>Unlike most games, the GB Camera RAM can only be written when PHI pin = ‘1’. It’s an enable signal for the RAM chip. Most cartridge readers and writers can’t handle PHI pin, so they can’t restore a saved backup. It isn’t needed to change ROM banks.</p>
 </div>
 <h2 id="io-registers-1"><a class="header" href="#io-registers-1">I/O Registers</a></h2>
-<p>The Game Boy Camera I/O registers are mapped to all banks with bit 4 set to ‘1’. The GB Camera ROM usually changes to bank 16 (10h) to use the registers.</p>
+<p>The Game Boy Camera I/O registers are mapped to all banks with bit 4 set to ‘1’. The GB Camera ROM usually changes to bank 16 ($10) to use the registers.</p>
 <p>There are 3 groups of registers:</p>
 <ul>
 <li>The first group is composed by the trigger register A000. This register starts the capture process and returns the current status (working/capture finished).</li>
 <li>The second group is composed by registers A001-A005, used to configure most parameters of the M64282FP sensor.</li>
 <li>The third group is composed by 48 registers that form a 4×4 matrix. Each element of the matrix is formed by 3 bytes. This matrix is used by the controller for contrast and dithering.</li>
 </ul>
-<p>All registers are write-only, except the register A000. The others return 00h when read. The initial values of all registers on reset is 00h.</p>
+<p>All registers are write-only, except the register A000. The others return $00 when read. The initial values of all registers on reset is $00.</p>
 <h3 id="register-a000"><a class="header" href="#register-a000">Register A000</a></h3>
 <p>The lower 3 bits of this register can be read and write. The other bits return ‘0’. Writing any value with bit 0 set to ‘1’ will start the capturing process. Any write with bit 0 set to ‘0’ is a normal write and won’t trigger the capture. The value of bits 1 and 2 affects the value written to registers 4, 5 and 6 of the M64282FP, which are used in 1-D filtering mode (effects described in following chapters).
 Bit 0 of this register is also used to verify if the capturing process is finished. It returns ‘1’ when the hardware is working and ‘0’ if the capturing process is over.
-When the capture process is active all RAM banks will return 00h when read (and writes are ignored), but the register A000 can still be read to know when the transfer is finished.
+When the capture process is active all RAM banks will return $00 when read (and writes are ignored), but the register A000 can still be read to know when the transfer is finished.
 The capturing process can be stopped by writing a ‘0’ to bit 0. When a ‘1’ is written again it will continue the previous capture process with the old capture parameters, even if the registers are changed in between. If the process is stopped RAM can be read again.</p>
 <h3 id="register-a001"><a class="header" href="#register-a001">Register A001</a></h3>
 <p>This register is mapped to register 1 of M64282FP. It controls the output gain and the edge operation mode.</p>
@@ -6740,11 +6739,11 @@ plugged in between the Game Boy and the actual game cartridge.</p>
 <code>ABC-DEF-GHI</code>, the meaning of the separate digits is:</p>
 <ul>
 <li><code>AB</code>, new data</li>
-<li><code>FCDE</code>, memory address, XORed by 0F000h</li>
-<li><code>GI</code>, old data, XORed by 0BAh and rotated left by two</li>
+<li><code>FCDE</code>, memory address, XORed by $F000</li>
+<li><code>GI</code>, old data, XORed by $BA and rotated left by two</li>
 <li><code>H</code>, Unknown, maybe checksum and/or else</li>
 </ul>
-<p>The address should be located in ROM area 0000h-7FFFh, the adapter
+<p>The address should be located in ROM area $0000-7FFF, the adapter
 permanently compares address/old data with address/data being read by
 the game, and replaces that data by new data if necessary. That method
 (more or less) prohibits unwanted patching of wrong memory banks.
@@ -7118,8 +7117,8 @@ buttons you want to terminate the STOP on).</p>
 </p>
 <h2 id="disabling-the-sound-controller"><a class="header" href="#disabling-the-sound-controller">Disabling the Sound Controller</a></h2>
 <p>If your program doesn’t use sound at all (or during some periods) then
-write 00h to register FF26 to save 16% or more on GB power consumption.
-Sound can be turned back on by writing 80h to the same register, all
+write $00 to register FF26 to save 16% or more on GB power consumption.
+Sound can be turned back on by writing $80 to the same register, all
 sound registers must be then re-initialized. When the Game Boy is turned
 on, sound is enabled by default, and must be turned off manually when
 not used.</p>

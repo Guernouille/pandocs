@@ -169,16 +169,16 @@ first sending one of the commands with the ending _TRN (by using normal
 packet transfer), the 4K data block is then read-out by the SNES from
 Game Boy display memory during the next frame.</p>
 <h2 id="transfer-data"><a class="header" href="#transfer-data">Transfer Data</a></h2>
-<p>Normally, transfer data should be stored at 8000h-8FFFh in Game Boy VRAM,
+<p>Normally, transfer data should be stored at 8000-8FFF in Game Boy VRAM,
 even though the SNES receives the data in from display scanlines, it
 will automatically re-produce the same ordering of bits and bytes, as
-being originally stored at 8000h-8FFFh in Game Boy memory.</p>
+being originally stored at 8000-8FFF in Game Boy memory.</p>
 <h2 id="preparing-the-display"><a class="header" href="#preparing-the-display">Preparing the Display</a></h2>
 <p>The above method works only when recursing the following things: BG Map
-must display unsigned characters 00h-FFh on the screen; 00h..13h in
-first line, 14h..27h in next line, etc. The Game Boy display must be
+must display unsigned characters $00-$FF on the screen; $00..$13 in
+first line, $14..$27 in next line, etc. The Game Boy display must be
 enabled, the display may not be scrolled, OBJ sprites should not overlap
-the background tiles, the BGP palette register must be set to E4h.</p>
+the background tiles, the BGP palette register must be set to $E4.</p>
 <h2 id="transfer-time"><a class="header" href="#transfer-time">Transfer Time</a></h2>
 <p>Note that the transfer data should be prepared in VRAM <strong>before</strong> sending
 the transfer command packet. The actual transfer starts at the beginning

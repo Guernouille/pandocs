@@ -168,11 +168,11 @@ plugged in between the Game Boy and the actual game cartridge.</p>
 <code>ABC-DEF-GHI</code>, the meaning of the separate digits is:</p>
 <ul>
 <li><code>AB</code>, new data</li>
-<li><code>FCDE</code>, memory address, XORed by 0F000h</li>
-<li><code>GI</code>, old data, XORed by 0BAh and rotated left by two</li>
+<li><code>FCDE</code>, memory address, XORed by $F000</li>
+<li><code>GI</code>, old data, XORed by $BA and rotated left by two</li>
 <li><code>H</code>, Unknown, maybe checksum and/or else</li>
 </ul>
-<p>The address should be located in ROM area 0000h-7FFFh, the adapter
+<p>The address should be located in ROM area $0000-7FFF, the adapter
 permanently compares address/old data with address/data being read by
 the game, and replaces that data by new data if necessary. That method
 (more or less) prohibits unwanted patching of wrong memory banks.
