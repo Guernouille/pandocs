@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/23ac185fa94bf67946ffc4f5b2da7e7ed9ab221f"><code>23ac185</code></a> (2023-03-28 18:46:39 +0200). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/3ee814406f10598bb4e654b8898d16a4b614507a"><code>3ee8144</code></a> (2023-03-30 08:15:38 +0200). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -223,13 +223,13 @@ td:first-child {
       <td>CPU</td><td colspan="4">8-bit 8080-like Sharp CPU (speculated to be a SM83 core)</td>
     </tr>
     <tr>
-      <td>CPU freq</td><td colspan="2">4.194304&nbsp;MHz</td><td>Depends on revision<sup class="footnote-reference"><a href="Specifications.html#sgb_clk">1</a></sup></td><td>Up to 8.388608&nbsp;MHz</td>
+      <td>CPU freq</td><td colspan="2">4.194304&nbsp;MHz<sup class="footnote-reference"><a href="Specifications.html#dmg_clk">1</a></sup></td><td>Depends on revision<sup class="footnote-reference"><a href="Specifications.html#sgb_clk">2</a></sup></td><td>Up to 8.388608&nbsp;MHz</td>
     </tr>
     <tr>
-        <td>Work RAM</td><td colspan="3">8&nbsp;KiB</td><td>32&nbsp;KiB<sup class="footnote-reference"><a href="Specifications.html#compat">2</a></sup> (4&nbsp;+&nbsp;7&nbsp;×&nbsp;4&nbsp;KiB)</td>
+        <td>Work RAM</td><td colspan="3">8&nbsp;KiB</td><td>32&nbsp;KiB<sup class="footnote-reference"><a href="Specifications.html#compat">3</a></sup> (4&nbsp;+&nbsp;7&nbsp;×&nbsp;4&nbsp;KiB)</td>
     </tr>
     <tr>
-        <td>Video RAM</td><td colspan="3">8&nbsp;KiB</td><td>16&nbsp;KiB<sup class="footnote-reference"><a href="Specifications.html#compat">2</a></sup> (2&nbsp;×&nbsp;8&nbsp;KiB)</td>
+        <td>Video RAM</td><td colspan="3">8&nbsp;KiB</td><td>16&nbsp;KiB<sup class="footnote-reference"><a href="Specifications.html#compat">3</a></sup> (2&nbsp;×&nbsp;8&nbsp;KiB)</td>
     </tr>
     <tr>
         <td>Screen</td><td>LCD 4.7&nbsp;×&nbsp;4.3&nbsp;cm</td><td>LCD 4.8&nbsp;×&nbsp;4.4&nbsp;cm</td><td>CRT TV</td><td>TFT 4.4&nbsp;×&nbsp;4&nbsp;cm</td>
@@ -241,16 +241,16 @@ td:first-child {
         <td>OBJ ("sprites")</td><td colspan="4">8&nbsp;×&nbsp;8 or 8&nbsp;×&nbsp;16 ; max 40 per screen, 10 per line</td>
     </tr>
     <tr>
-        <td>Palettes</td><td colspan="2">BG: 1&nbsp;×&nbsp;4, OBJ: 2&nbsp;×&nbsp;3</td><td>BG/OBJ: 1&nbsp;+&nbsp;4&nbsp;×&nbsp;3, border: 4&nbsp;×&nbsp;15</td><td>BG: 8&nbsp;×&nbsp;4, OBJ: 8&nbsp;×&nbsp;3<sup class="footnote-reference"><a href="Specifications.html#compat">2</a></sup></td>
+        <td>Palettes</td><td colspan="2">BG: 1&nbsp;×&nbsp;4, OBJ: 2&nbsp;×&nbsp;3</td><td>BG/OBJ: 1&nbsp;+&nbsp;4&nbsp;×&nbsp;3, border: 4&nbsp;×&nbsp;15</td><td>BG: 8&nbsp;×&nbsp;4, OBJ: 8&nbsp;×&nbsp;3<sup class="footnote-reference"><a href="Specifications.html#compat">3</a></sup></td>
     </tr>
     <tr>
         <td>Colors</td><td>4 shades of green</td><td>4 shades of gray</td><td colspan="2">32768 colors (15-bit RGB)</td>
     </tr>
     <tr>
-        <td>Horizontal sync</td><td colspan="2">9.198&nbsp;KHz</td><td>Complicated<sup class="footnote-reference"><a href="Specifications.html#sgb_vid">3</a></sup></td><td>9.198&nbsp;KHz</td>
+        <td>Horizontal sync</td><td colspan="2">9.198&nbsp;KHz</td><td>Complicated<sup class="footnote-reference"><a href="Specifications.html#sgb_vid">4</a></sup></td><td>9.198&nbsp;KHz</td>
     </tr>
     <tr>
-        <td>Vertical sync</td><td colspan="2">59.73&nbsp;Hz</td><td>Complicated<sup class="footnote-reference"><a href="Specifications.html#sgb_vid">3</a></sup></td><td>59.73&nbsp;Hz</td>
+        <td>Vertical sync</td><td colspan="2">59.73&nbsp;Hz</td><td>Complicated<sup class="footnote-reference"><a href="Specifications.html#sgb_vid">4</a></sup></td><td>59.73&nbsp;Hz</td>
     </tr>
     <tr>
         <td>Sound</td><td colspan="2">4 channels with stereo output</td><td>4 GB channels + SNES audio</td><td>4 channels with stereo output</td>
@@ -260,17 +260,20 @@ td:first-child {
     </tr>
   </tbody>
 </table>
-<div class="footnote-definition" id="sgb_clk"><sup class="footnote-definition-label">1</sup>
+<div class="footnote-definition" id="dmg_clk"><sup class="footnote-definition-label">1</sup>
+<p>Real DMG units tend to run about 50-70 PPM slow. Accuracy of other models is unknown. <a href="https://github.com/jkotlinski/gbchrono">See this page</a> for more details.</p>
+</div>
+<div class="footnote-definition" id="sgb_clk"><sup class="footnote-definition-label">2</sup>
 <p>SGB1 cartridges derive the GB CPU clock from the SNES’ clock, <a href="SGB_Functions.html#sgb-system-clock">yielding a clock speed a bit higher</a>, which differs slightly between NTSC and PAL systems.
 SGB2 instead uses a clock internal to the cartridge, and so has the same speed as the handhelds.</p>
 </div>
-<div class="footnote-definition" id="compat"><sup class="footnote-definition-label">2</sup>
+<div class="footnote-definition" id="compat"><sup class="footnote-definition-label">3</sup>
 <p>The same value as on DMG is used in compatibility mode.</p>
 </div>
-<div class="footnote-definition" id="sgb_vid"><sup class="footnote-definition-label">3</sup>
+<div class="footnote-definition" id="sgb_vid"><sup class="footnote-definition-label">4</sup>
 <p>The SGB runs two consoles: a Game Boy within the SGB cartridge, and the SNES itself.
 The GB LCD output is captured and displayed by the SNES, but the two consoles’ frame rates don’t quite sync up, leading to duplicated and/or dropped frames.
-The GB side of the vertical sync depends on the CPU clock<sup class="footnote-reference"><a href="#sgb_clk">1</a></sup>, with the same ratio as the handhelds.</p>
+The GB side of the vertical sync depends on the CPU clock<sup class="footnote-reference"><a href="#sgb_clk">2</a></sup>, with the same ratio as the handhelds.</p>
 </div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="memory-map"><a class="header" href="#memory-map">Memory Map</a></h1>
 <p>The Game Boy has a 16-bit address bus, which is used to address ROM, RAM, and I/O.</p>
