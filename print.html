@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/cad6bd93a30cce9e27dbaf56069afa0b3faf36ca"><code>cad6bd9</code></a> (2023-04-09 01:31:40 +0200). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/3f1c43ef515e6c6a8b76922f801d6185466a08dd"><code>3f1c43e</code></a> (2023-06-14 00:29:45 +0200). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -3172,15 +3172,17 @@ regular execution as soon as an interrupt becomes pending. However, since
 the “<code>halt</code> bug”, explained below, is triggered.</li>
 </ul>
 <h2 id="halt-bug"><a class="header" href="#halt-bug"><code>halt</code> bug</a></h2>
-<p>Under some circumstances, <code>pc</code> fails to be normally incremented.</p>
-<p>The most typical trigger, <code>halt</code> with <code>IME</code>=0 and <code>[IE] &amp; [IF] != 0</code>, causes
-the byte after the <code>halt</code> to be read twice.</p>
-<p>The behavior is different when <code>ei</code> (whose effect is typically delayed by one
-instruction) is followed immediately by a <code>halt</code>, and an interrupt is pending
-as the <code>halt</code> is executed. The interrupt is serviced and the handler called,
-but the interrupt returns to the <code>halt</code>, which is executed again, and thus
+<p>When a <code>halt</code> instruction is executed with <code>IME = 0</code> and <code>[IE] &amp; [IF] != 0</code>, the <code>halt</code> instruction ends immediately, but <a href="https://github.com/nitro2k01/little-things-gb/tree/main/double-halt-cancel"><code>pc</code> fails to be normally incremented</a>.</p>
+<p>Under most circumstances, this causes the byte after the <code>halt</code> to be read a second time (and this behaviour can repeat if said byte executes another <code>halt</code> instruction).
+But, if the <code>halt</code> is immediately followed by a jump to elsewhere, then the behaviour will be slightly different; this is possible in only one of two ways:</p>
+<ul>
+<li>The <code>halt</code> comes immediately after a <code>ei</code> instruction (whose effect is typically delayed by one instruction, hence <code>IME</code> still being zero for the <code>halt</code>): the interrupt is serviced and the handler called, but the interrupt returns to the <code>halt</code>, which is executed again, and thus
 waits for another interrupt.
-(<a href="https://github.com/LIJI32/SameSuite/blob/master/interrupt/ei_delay_halt.asm">Source</a>)</p>
+(<a href="https://github.com/LIJI32/SameSuite/blob/master/interrupt/ei_delay_halt.asm">Source</a>)</li>
+<li>The <code>halt</code> is immediately followed by a <code>rst</code> instruction: the <code>rst</code> instruction’s return address will point at the <code>rst</code> itself, instead of the byte after it.
+Notably, a <code>ret</code> would return to the <code>rst</code> an execute it again.</li>
+</ul>
+<p>If the bugged <code>halt</code> is preceded by a <code>ei</code> and followed by a <code>rst</code>, the former “wins”.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="cgb-registers"><a class="header" href="#cgb-registers">CGB Registers</a></h1>
 <p>This chapter describes only Game Boy Color (GBC or CGB) registers that didn’t
 fit into normal categories — most CGB registers are described in the

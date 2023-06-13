@@ -180,15 +180,17 @@ regular execution as soon as an interrupt becomes pending. However, since
 the “<code>halt</code> bug”, explained below, is triggered.</li>
 </ul>
 <h2 id="halt-bug"><a class="header" href="#halt-bug"><code>halt</code> bug</a></h2>
-<p>Under some circumstances, <code>pc</code> fails to be normally incremented.</p>
-<p>The most typical trigger, <code>halt</code> with <code>IME</code>=0 and <code>[IE] &amp; [IF] != 0</code>, causes
-the byte after the <code>halt</code> to be read twice.</p>
-<p>The behavior is different when <code>ei</code> (whose effect is typically delayed by one
-instruction) is followed immediately by a <code>halt</code>, and an interrupt is pending
-as the <code>halt</code> is executed. The interrupt is serviced and the handler called,
-but the interrupt returns to the <code>halt</code>, which is executed again, and thus
+<p>When a <code>halt</code> instruction is executed with <code>IME = 0</code> and <code>[IE] &amp; [IF] != 0</code>, the <code>halt</code> instruction ends immediately, but <a href="https://github.com/nitro2k01/little-things-gb/tree/main/double-halt-cancel"><code>pc</code> fails to be normally incremented</a>.</p>
+<p>Under most circumstances, this causes the byte after the <code>halt</code> to be read a second time (and this behaviour can repeat if said byte executes another <code>halt</code> instruction).
+But, if the <code>halt</code> is immediately followed by a jump to elsewhere, then the behaviour will be slightly different; this is possible in only one of two ways:</p>
+<ul>
+<li>The <code>halt</code> comes immediately after a <code>ei</code> instruction (whose effect is typically delayed by one instruction, hence <code>IME</code> still being zero for the <code>halt</code>): the interrupt is serviced and the handler called, but the interrupt returns to the <code>halt</code>, which is executed again, and thus
 waits for another interrupt.
-(<a href="https://github.com/LIJI32/SameSuite/blob/master/interrupt/ei_delay_halt.asm">Source</a>)</p>
+(<a href="https://github.com/LIJI32/SameSuite/blob/master/interrupt/ei_delay_halt.asm">Source</a>)</li>
+<li>The <code>halt</code> is immediately followed by a <code>rst</code> instruction: the <code>rst</code> instruction’s return address will point at the <code>rst</code> itself, instead of the byte after it.
+Notably, a <code>ret</code> would return to the <code>rst</code> an execute it again.</li>
+</ul>
+<p>If the bugged <code>halt</code> is preceded by a <code>ei</code> and followed by a <code>rst</code>, the former “wins”.</p>
 
                     </main>
 
