@@ -177,7 +177,7 @@ Emulator developers may be also interested in the <a href="https://gekkio.fi/fil
 <p>You can search anywhere by pressing <kbd>s</kbd> on your keyboard or clicking the <i class="fa fa-search"></i> icon.</p>
 <p>The <i class="fa fa-edit"></i> icon allows you to suggest an edit on the current page by directly opening the source file in the git repository.</p>
 <p><a href="single.html">One-page</a> and <a href="print.html">printable</a> versions of this document are also available.</p>
-<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/3f1c43ef515e6c6a8b76922f801d6185466a08dd"><code>3f1c43e</code></a> (2023-06-14 00:29:45 +0200). </small></p>
+<p><br><br><small>This document version was produced from git commit <a href="https://github.com/gbdev/pandocs/tree/6f7ab5187305dfda58c5b5778a340707db865f16"><code>6f7ab51</code></a> (2023-06-14 00:56:01 +0200). </small></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="acknowledgements"><a class="header" href="#acknowledgements">Acknowledgements</a></h1>
 <p>The maintenance and expansion of this project wouldn’t be possible without the continued commitment and support of:</p>
 <ul>
@@ -1053,20 +1053,49 @@ A similar behaviour <a href="https://forums.nesdev.org/viewtopic.php?f=10&amp;t=
 </div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="oam-dma-transfer"><a class="header" href="#oam-dma-transfer">OAM DMA Transfer</a></h1>
 <h2 id="ff46--dma-oam-dma-source-address--start"><a class="header" href="#ff46--dma-oam-dma-source-address--start">FF46 — DMA: OAM DMA source address &amp; start</a></h2>
-<p>Writing to this register launches a DMA transfer from ROM or RAM to OAM
-(Object Attribute Memory). The written value specifies the
+<p>Writing to this register starts a DMA transfer from ROM or RAM to OAM
+(Object Attribute Memory).  The written value specifies the
 transfer source address divided by $100, that is, source and destination are:</p>
 <pre><code>Source:      $XX00-$XX9F   ;XX = $00 to $DF
 Destination: $FE00-$FE9F
 </code></pre>
-<p>The transfer takes 160 machine cycles: 152 microseconds in normal speed
-or 76 microseconds in CGB Double Speed Mode. On DMG, during this time,
-the CPU can access only HRAM (memory at $FF80-$FFFE); on CGB, the bus used
-by the source area cannot be used (this isn’t understood well at the
-moment; it’s recommended to assume same behavior as DMG). For this
-reason, the programmer must copy a short procedure into HRAM, and use
-this procedure to start the transfer from inside HRAM, and wait until
-the transfer has finished:</p>
+<p>The transfer takes 160 machine cycles: 640 dots (1.4 lines) in normal speed,
+or 320 dots (0.7 lines) in CGB Double Speed Mode.
+This is much faster than a CPU-driven copy.</p>
+<h2 id="oam-dma-bus-conflicts"><a class="header" href="#oam-dma-bus-conflicts">OAM DMA bus conflicts</a></h2>
+<p>On DMG, during OAM DMA, the CPU can access only HRAM (memory at $FF80-$FFFE).
+For this reason, the programmer must copy a short procedure (see below) into HRAM, and use
+this procedure to start the transfer <strong>from inside HRAM</strong>, and wait until
+the transfer has finished.</p>
+<p>On CGB, the cartridge and WRAM are on separate buses.
+This means that the CPU can access ROM or cartridge SRAM during OAM DMA from WRAM, or WRAM during OAM DMA from ROM or SRAM.
+However, because a <code>call</code> writes a return address to the stack, and the stack and variables are usually in WRAM,
+it’s still recommended to busy-wait in HRAM for DMA to finish even on CGB.</p>
+<div class="box warning">
+<p class="box-title">Interrupts</p><p>An interrupt writes a return address to the stack and fetches the interrupt handler’s instructions from ROM.
+Thus, it’s critical to prevent interrupts during OAM DMA, especially in a program that uses timer, serial, or joypad interrupts, since they are not synchronized to the LCD.
+This can be done by executing DMA within the VBlank interrupt handler or through the <code>di</code> instruction.</p>
+</div>
+<p>While an OAM DMA is in progress, the PPU cannot read OAM properly either.
+Thus, most programs execute DMA during <a href="#stat-modes">Mode 1</a>, inside or immediately after their VBlank handler.
+But it is also possible to execute it during display redraw (Modes 2 and 3),
+allowing to display more than 40 objects on the screen (that is, for
+example 40 objects in the top half, and other 40 objects in the bottom half of
+the screen), at the cost of a couple lines that lack objects.
+If the transfer is started during Mode 3, graphical glitches may happen.</p>
+<p>The details:</p>
+<ul>
+<li>If OAM DMA is active during OAM scan (mode 2), most PPU revisions read each object
+as being off-screen and thus hidden on that line.</li>
+<li>If OAM DMA is active during rendering (mode 3), the PPU reads whatever 16-bit word
+the DMA unit is writing to OAM when the object is fetched.
+This causes an incorrect tile number and attributes for objects already determined to be in range.</li>
+</ul>
+<!-- TODO: find Hacktix test ROM -->
+<!-- TODO: keep working on "Red from OAM", a reproducer that races the beam to overwrite tile number and attributes of objects previously seen in Mode 2 -->
+<h2 id="best-practices"><a class="header" href="#best-practices">Best practices</a></h2>
+<p>This 10-byte routine starts a transfer and waits for it to finish.
+Many games copy a routine like it into HRAM and call it during Mode 1.</p>
 <pre><code class="language-rgbasm">run_dma:
     ld a, HIGH(start address)
     ldh [$FF46], a  ; start DMA transfer (starts right after instruction)
@@ -1076,29 +1105,23 @@ the transfer has finished:</p>
     jr nz, .wait    ; 3 cycles
     ret
 </code></pre>
-<p>Because sprites are not displayed while an OAM DMA transfer is in progress, most
-programs execute this procedure from inside their VBlank
-handler. But it is also possible to execute it during display redraw (Modes 2 and 3),
-allowing to display more than 40 sprites on the screen (that is, for
-example 40 sprites in the top half, and other 40 sprites in the bottom half of
-the screen), at the cost of a couple lines that lack sprites due to the fact that
-during those couple lines the PPU reads OAM as $FF. Besides, graphic glitches may
-happen if an OAM DMA transfer is started during Mode 3.</p>
-<p>A more compact procedure is</p>
+<p>If HRAM is tight, this more compact procedure saves 5 bytes of HRAM
+at the cost of a few cycles spent jumping to the tail in HRAM.</p>
 <pre><code class="language-rgbasm">run_dma:          ; This part is in ROM
     ld a, HIGH(start address)
     ld bc, $2846  ; B: wait time; C: LOW($FF46)
-    jp run_dma_hrampart
+    jp run_dma_tail
 
-run_dma_hrampart:
+run_dma_tail:     ; This part is in HRAM
     ldh [c], a
 .wait
     dec b
     jr nz, .wait
     ret
 </code></pre>
-<p>This saves 5 bytes of HRAM, but is slightly slower in most cases due to
-the jump into the HRAM part.</p>
+<p>If starting a mid-frame transfer, wait for Mode 0 first
+so that the transfer cleanly overlaps Mode 2 on the next two lines,
+making objects invisible on those lines.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lcd-control"><a class="header" href="#lcd-control">LCD Control</a></h1>
 <h2 id="ff40--lcdc-lcd-control"><a class="header" href="#ff40--lcdc-lcd-control">FF40 — LCDC: LCD control</a></h2>
 <p><strong>LCDC</strong> is the main <strong>LCD C</strong>ontrol register. Its bits toggle what
